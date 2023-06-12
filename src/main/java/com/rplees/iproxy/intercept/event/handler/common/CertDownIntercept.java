@@ -55,10 +55,14 @@ public class CertDownIntercept extends HttpEventHandlerAdapter {
         this.cert = cert;
     }
 
+    boolean isVisitSelf(ParamContext paramCtx) {
+    	Proto proto = paramCtx.router().local();
+    	return ! proto.proxy() && proto.port() == 1113;
+    }
+    
     @Override
     public void beforeRequest(Channel localChannel, HttpRequest msg, ParamContext paramCtx, EventHandlerContext ctx) throws Exception {
-    	Proto proto = paramCtx.router().local();
-        if (! proto.proxy()) { // 直接访问
+        if (isVisitSelf(paramCtx)) { // 直接访问
             if (msg.uri().matches("^.*/iproxy_ca.crt.*$")) {  //下载证书
             	byte[] bts = cert.getEncoded();
                 FullHttpResponse httpResponse = new DefaultFullHttpResponse(msg.protocolVersion(), HttpResponseStatus.OK, Unpooled.wrappedBuffer(bts));
@@ -97,8 +101,7 @@ public class CertDownIntercept extends HttpEventHandlerAdapter {
 
     @Override
     public void beforeRequest(Channel localChannel, HttpContent msg, ParamContext paramCtx, EventHandlerContext pipeline) throws Exception {
-    	Proto proto = paramCtx.router().local();
-        if (! proto.proxy()) {
+        if (isVisitSelf(paramCtx)) {
             pipeline.fireBeforeRequest(localChannel, msg, paramCtx);
         }
     }

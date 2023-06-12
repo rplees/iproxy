@@ -1,6 +1,8 @@
 package com.rplees.iproxy.utils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -38,7 +40,11 @@ public class Logs {
 		
 		String name = "UNKNOWN";
 		if(local instanceof HttpProto) {
-			name = ((HttpProto) local).uri();
+			try {
+				name = URLDecoder.decode(((HttpProto) local).uri(), charset.toString());
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		if(name.startsWith(startWith)) {
