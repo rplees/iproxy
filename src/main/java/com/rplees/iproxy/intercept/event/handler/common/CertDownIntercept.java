@@ -76,7 +76,7 @@ public class CertDownIntercept extends HttpEventHandlerAdapter {
     		downUrlTip = DEFAULT_DOWN_URL_TIP;
     	}
     	
-        if (isVisitSelf(paramCtx)) { // 直接访问
+//        if (isVisitSelf(paramCtx)) { // 直接访问
             if (msg.uri().matches(downUrl)) {  //下载证书
             	flag = false;
             	byte[] bts = cert.getEncoded();
@@ -116,10 +116,10 @@ public class CertDownIntercept extends HttpEventHandlerAdapter {
             	flag = true;
             	ctx.fireBeforeRequest(localChannel, msg, paramCtx);
             }
-        } else {
-        	flag = true;
-        	ctx.fireBeforeRequest(localChannel, msg, paramCtx);
-        }
+//        } else {
+//        	flag = true;
+//        	ctx.fireBeforeRequest(localChannel, msg, paramCtx);
+//        }
     }
 
     @Override

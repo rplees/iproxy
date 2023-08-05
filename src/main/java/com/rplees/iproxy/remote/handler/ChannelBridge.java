@@ -63,7 +63,7 @@ public final class ChannelBridge {
 		}
 		
 		if (proxyHandler != null) {
-            ch.pipeline().addLast(proxyHandler);
+            ch.pipeline().addLast("_proxyHandler_", proxyHandler);
         }
 	}
 	

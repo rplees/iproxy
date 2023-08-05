@@ -9,6 +9,7 @@ import com.rplees.iproxy.local.RuntimeOption;
 import com.rplees.iproxy.proto.Proto;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.DecoderResult;
@@ -44,7 +45,12 @@ public class RemoteHttpHandlerInitializer extends ChannelInitializer<Channel> {
         RuntimeOption option = context.pipeline().option();
         
         if (proto.ssl()) {
-            ch.pipeline().addFirst(option.getClientSslCtx().newHandler(ch.alloc(), proto.host(), proto.port()));
+        	ChannelHandler proxyHandler = ch.pipeline().get("_proxyHandler_");
+        	if(proxyHandler != null) {
+        		ch.pipeline().addAfter("_proxyHandler_", "_client_ssl_", option.getClientSslCtx().newHandler(ch.alloc(), proto.host(), proto.port()));
+        	} else {
+        		ch.pipeline().addFirst("_client_ssl_", option.getClientSslCtx().newHandler(ch.alloc(), proto.host(), proto.port()));
+        	}
         }
         
         ch.pipeline().addLast(new LoggingHandler(">>>REMOTE-HTTP<<<", LogLevel.TRACE));
